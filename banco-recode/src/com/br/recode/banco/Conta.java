@@ -2,13 +2,12 @@ package com.br.recode.banco;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-public class Conta {
+public abstract class Conta {
 
 	private int numero;
 	private double saldo;
 	private Cliente cliente;
 	private String senha;
-
 		
 	public Conta() {
 		
@@ -52,14 +51,7 @@ public class Conta {
 		saldo = saldo + valor;
 	}
 	
-	public double debitar(double valor) {
-		if(valor <= saldo) {
-			saldo = saldo - valor;			
-		} else {
-			System.out.println("Saldo insuficiente");
-		}
-		return saldo;
-	}
+	public abstract double debitar(double valor);
 	
 	public void tranferir (double valor, Conta destino) {
 		debitar(valor);
