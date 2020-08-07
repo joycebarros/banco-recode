@@ -2,38 +2,38 @@ package com.br.recode.controlador;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
-import com.br.recode.banco.Cliente;
-import com.br.recode.banco.Conta;
-import com.br.recode.banco.ContaBonificada;
-import com.br.recode.banco.ContaCorrente;
-import com.br.recode.banco.ContaSalario;
-import com.br.recode.banco.Poupanca;
+import com.br.recode.DAO.ContaDAO;
+import com.br.recode.entidades.Cliente;
+import com.br.recode.entidades.Conta;
+import com.br.recode.entidades.ContaBonificada;
+import com.br.recode.entidades.ContaCorrente;
+import com.br.recode.entidades.ContaSalario;
+import com.br.recode.entidades.Poupanca;
+import com.br.recode.gui.ContaGui;
 
 public class Controlador {
-
-	static List<Conta> listaContas = new ArrayList<>();
-	static Scanner scan = new Scanner(System.in);
-	static int numeroInformado;
 	
-	public static Conta abrirConta() {
+	private ContaDAO contaDAO;
+		
+	public Controlador() {
+		contaDAO = new ContaDAO();		
+	}
+
+	int numeroInformado;
+	
+	public Conta abrirConta(String cpf, String nome, String senha) {
 		
 		Conta conta = null;
-		Cliente cliente;
-		
-		System.out.println("Informe o CPF:");
-		String cpf = scan.next();
-		System.out.println("Informe o nome:");
-		String nome = scan.next();
-		cliente = new Cliente(cpf, nome);
-		
-		System.out.println("Digite [1] para Conta Corrente \n [2] para Poupança \n [3] para Conta Bonificada \n [4] para Conta Salário");
-		
+		Cliente cliente = new Cliente(cpf, nome);
+		if(!isClienteExistente(cliente)) {
+			contaDAO.addClientes(cliente);
+		}
+		ContaGui contaGui = new ContaGui();
+		numeroInformado = contaGui.tipoConta();
 		boolean isNumeroInvalido = true;
 		while(isNumeroInvalido) {
-			numeroInformado = scan.nextInt();
-						
+									
 			switch (numeroInformado) {
 			case 1:
 				conta = new ContaCorrente();
@@ -52,109 +52,121 @@ public class Controlador {
 	        	isNumeroInvalido = false;
 				break;		
 			default:
-				System.out.println("Número inválido");
+				System.out.println("Número Inválido");
 				break;
 			}
 		}
-		conta.setNumero(120 + listaContas.size() + 1);
+		
+		conta.setNumero(gerarNumeroConta());
 		conta.setSaldo(0.0);
 		conta.setCliente(cliente);
-		System.out.println("Digite a sua senha:");
-		String senha = scan.next();
 		conta.setSenha(senha);
-		listaContas.add(conta);
-
-		System.out.println("Conta número " + conta.getNumero() + " aberta com sucesso!");
+		contaDAO.addContas(conta);
+		
 		return conta;
 	}
 	
-	public static Conta buscarConta() {
+	public Conta buscarConta(int numero) {
 		Conta conta = null;
-		
-		System.out.println("Digite o número da sua conta");
-		numeroInformado = scan.nextInt();
-				
+		List<Conta> listaContas = contaDAO.listarContas();		
 		for (Conta contaAtual : listaContas) {
-			if(numeroInformado == contaAtual.getNumero()) {
+			if(numero == contaAtual.getNumero()) {
 				conta = contaAtual;				
 			}
 		}
 		return conta;
 	}
 	
-	public static Double consultarSaldo() {
-		
-		Conta conta = buscarConta();
-		
-		if(conta != null) {
-			System.out.println("O saldo da conta é :" + conta.getSaldo());
-			return conta.getSaldo();			
-		} else {
-			System.out.println("Conta não encontrada");
-			return null;
-		}
+	public Integer gerarNumeroConta() {
+		return 120 + contaDAO.tamanhoListaContas() +1;
 	}
 	
-	public static void creditarValor() {
-		
-		Conta conta = buscarConta();
-						
-		System.out.println("Informe o valor a ser creditado: ");
-		double valor = scan.nextDouble();
-		conta.creditar(valor);
-		System.out.println("Valor :" + valor + " creditado na conta: " + conta.getNumero());
+//	public Double consultarSaldo(int numero) {
+//		Double valor = null;
+//		Conta conta = buscarConta(numero);
+//		if(conta != null) {
+//			valor = conta.getSaldo();			
+//		}
+//		return valor;
+//	}
 	
+	public void creditarValor(int numero, double valor) {
+		
+		Conta conta = buscarConta(numero);
+		conta.creditar(valor);	
 	}
 	
-	public static void debitarValor() {
+	public boolean debitarValor(int numero, double valor, String senha) {
 		
-		Conta conta = buscarConta();
+		Conta conta = buscarConta(numero);
 		
-		System.out.println("Informe o valor a ser debitado: ");
-		double valor = scan.nextDouble();
-		System.out.println("Digite a sua senha:");
-		String senha = scan.next();
 		if(conta.validarSenha(senha)) {
-			conta.debitar(valor);
-			System.out.println("Valor :" + valor + " debitado na conta: " + conta.getNumero());
+			conta.debitar(valor);	
+			return true;
 		}else {
-			System.out.println("Senha inválida");
+			return false;
 		}
-			
 	}
 	
-	public static void transferirValor() {
-		Conta conta = null;
-		Conta conta2 = null;
-		System.out.println("Informe o número da conta que deseja debitar o valor:");
-		numeroInformado = scan.nextInt();
-				
-		for (Conta contaAtual : listaContas) {
-			if(numeroInformado == contaAtual.getNumero()) {
-				conta = contaAtual;
-			}
-		}
-		System.out.println("Informe o valor a ser transferido: ");
-		double valor = scan.nextDouble();
-		System.out.println("Informe o número da conta que deseja creditar o valor:");
-		int numeroInformado2 = scan.nextInt();
-			
-		for (Conta contaDestino : listaContas) {
-			if(numeroInformado2 == contaDestino.getNumero()) {
-				conta2 = contaDestino;
-			}
-		}
-		
-		System.out.println("Digite a sua senha:");
-		String senha = scan.next();
+	public boolean transferirValor(int numero1, double valor, int numero2, String senha) {
+		Conta conta = buscarConta(numero1);
+		Conta conta2 = buscarConta(numero2);
 		if(conta.validarSenha(senha)) {
 			conta.tranferir(valor, conta2);
-			System.out.println("Valor :" + valor + " debitado da conta: " 
-					+ conta.getNumero() + " e creditado na conta :" + conta2.getNumero());	
+			return true;
 		}else {
-			System.out.println("Senha inválida");
+			return false;
 		}		
+	}
 		
+	public List<Conta> listarContasCliente(String cpf){
+		List<Conta> listaContasCliente = new ArrayList<>();
+		List<Conta> listaContas = contaDAO.listarContas();		
+		for (Conta contaAtual : listaContas) {
+			if(cpf.equals(contaAtual.getCliente().getCpf())) {
+				listaContasCliente.add(contaAtual);								
+			}
+		}
+		return listaContasCliente;
 	}
 	
+	public boolean isClienteExistente(Cliente pCliente) {
+		boolean isClienteExiste = false;
+		List<Cliente> lista = contaDAO.listarClientes();
+		for (Cliente cliente : lista) {
+			if(cliente.equals(pCliente)) {
+				isClienteExiste = true;
+			}
+		}
+		return isClienteExiste;
+	}
+	
+	public List<Cliente> listarClientes(){
+		return contaDAO.listarClientes();
+	}
+	
+	public Cliente buscarCliente(String cpf) {
+		Cliente clienteAtual = null;
+		List<Cliente> listaClientes = contaDAO.listarClientes();		
+		for (Cliente cliente : listaClientes) {
+			if(cpf.equals(cliente.getCpf())) {
+				clienteAtual = cliente;
+			}			
+		}
+		return clienteAtual;
+	}
+
+	public void removerClienteLista(String cpf) {
+		Cliente cliente = buscarCliente(cpf);
+		contaDAO.removerCliente(cliente);
+	}
+	
+	public void atualizarCliente(String cpf, String nome) {
+		Cliente cliente = buscarCliente(cpf);
+		removerClienteLista(cpf);
+		cliente.setCpf(cpf);
+		cliente.setNome(nome);	
+		contaDAO.addClientes(cliente);
+	}
+		
 }

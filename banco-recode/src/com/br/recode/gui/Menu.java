@@ -1,4 +1,4 @@
-package com.br.recode.banco;
+package com.br.recode.gui;
 
 import java.io.IOException;
 

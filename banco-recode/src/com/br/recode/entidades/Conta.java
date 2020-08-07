@@ -1,4 +1,4 @@
-package com.br.recode.banco;
+package com.br.recode.entidades;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -61,4 +61,11 @@ public abstract class Conta {
 	public boolean validarSenha(String senha) {
 		return BCrypt.checkpw(senha, this.getSenha());
 	}
+
+	@Override
+	public String toString() {
+		return "Conta [numero=" + numero + ", saldo=" + saldo + ", cliente=" + cliente + "]";
+	}
+	
+	
 }

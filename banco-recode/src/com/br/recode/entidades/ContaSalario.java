@@ -1,4 +1,4 @@
-package com.br.recode.banco;
+package com.br.recode.entidades;
 
 public class ContaSalario extends Conta{
 	
@@ -12,6 +12,11 @@ public class ContaSalario extends Conta{
 			System.out.println("Saldo insuficiente");
 		}
 		return getSaldo();
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString();
 	}
 
 }

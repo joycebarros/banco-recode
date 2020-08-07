@@ -1,4 +1,4 @@
-package com.br.recode.banco;
+package com.br.recode.entidades;
 
 public class Poupanca extends ContaCorrente {
 	
@@ -10,6 +10,9 @@ public class Poupanca extends ContaCorrente {
 		
 	}
 	
-	
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 
 }
