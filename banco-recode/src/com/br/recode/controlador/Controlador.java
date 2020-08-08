@@ -1,6 +1,5 @@
 package com.br.recode.controlador;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.br.recode.DAO.ContaDAO;
@@ -10,51 +9,37 @@ import com.br.recode.entidades.ContaBonificada;
 import com.br.recode.entidades.ContaCorrente;
 import com.br.recode.entidades.ContaSalario;
 import com.br.recode.entidades.Poupanca;
-import com.br.recode.gui.ContaGui;
 
 public class Controlador {
-	
-	private ContaDAO contaDAO;
 		
+	public static final int CONTA_CORRENTE = 1;
+	public static final int POUPANCA = 2;
+	public static final int CONTA_BONIFICADA = 3;
+	public static final int CONTA_SALARIO = 4;
+	private ContaDAO contaDAO;
+			
 	public Controlador() {
 		contaDAO = new ContaDAO();		
 	}
 
 	int numeroInformado;
 	
-	public Conta abrirConta(String cpf, String nome, String senha) {
+	public Conta abrirConta(String cpf, String nome, String senha, int numeroInformado) {
 		
 		Conta conta = null;
 		Cliente cliente = new Cliente(cpf, nome);
 		if(!isClienteExistente(cliente)) {
 			contaDAO.addClientes(cliente);
 		}
-		ContaGui contaGui = new ContaGui();
-		numeroInformado = contaGui.tipoConta();
-		boolean isNumeroInvalido = true;
-		while(isNumeroInvalido) {
-									
-			switch (numeroInformado) {
-			case 1:
-				conta = new ContaCorrente();
-				isNumeroInvalido = false;
-				break;
-	        case 2:
-	        	conta = new Poupanca();
-	        	isNumeroInvalido = false;
-				break;
-	        case 3:
-	        	conta = new ContaBonificada();
-	        	isNumeroInvalido = false;
-				break;
-	        case 4:
-	        	conta = new ContaSalario();
-	        	isNumeroInvalido = false;
-				break;		
-			default:
-				System.out.println("Número Inválido");
-				break;
-			}
+		
+		if(numeroInformado == CONTA_CORRENTE) {
+			conta = new ContaCorrente();
+		} else if (numeroInformado == POUPANCA) {
+			conta = new Poupanca();
+		} else if (numeroInformado == CONTA_BONIFICADA) {
+			conta = new ContaBonificada();
+		} else if (numeroInformado == CONTA_SALARIO) {
+			conta = new ContaSalario();
 		}
 		
 		conta.setNumero(gerarNumeroConta());
@@ -67,13 +52,7 @@ public class Controlador {
 	}
 	
 	public Conta buscarConta(int numero) {
-		Conta conta = null;
-		List<Conta> listaContas = contaDAO.listarContas();		
-		for (Conta contaAtual : listaContas) {
-			if(numero == contaAtual.getNumero()) {
-				conta = contaAtual;				
-			}
-		}
+		Conta conta = contaDAO.buscarConta(numero);		
 		return conta;
 	}
 	
@@ -81,17 +60,16 @@ public class Controlador {
 		return 120 + contaDAO.tamanhoListaContas() +1;
 	}
 	
-//	public Double consultarSaldo(int numero) {
-//		Double valor = null;
-//		Conta conta = buscarConta(numero);
-//		if(conta != null) {
-//			valor = conta.getSaldo();			
-//		}
-//		return valor;
-//	}
+	public Double consultarSaldo(int numero) {
+		Double valor = null;
+		Conta conta = buscarConta(numero);
+		if(conta != null) {
+			valor = conta.getSaldo();			
+		}
+		return valor;
+	}
 	
 	public void creditarValor(int numero, double valor) {
-		
 		Conta conta = buscarConta(numero);
 		conta.creditar(valor);	
 	}
@@ -120,24 +98,12 @@ public class Controlador {
 	}
 		
 	public List<Conta> listarContasCliente(String cpf){
-		List<Conta> listaContasCliente = new ArrayList<>();
-		List<Conta> listaContas = contaDAO.listarContas();		
-		for (Conta contaAtual : listaContas) {
-			if(cpf.equals(contaAtual.getCliente().getCpf())) {
-				listaContasCliente.add(contaAtual);								
-			}
-		}
+		List<Conta> listaContasCliente = contaDAO.listarContasCliente(cpf);
 		return listaContasCliente;
 	}
 	
 	public boolean isClienteExistente(Cliente pCliente) {
-		boolean isClienteExiste = false;
-		List<Cliente> lista = contaDAO.listarClientes();
-		for (Cliente cliente : lista) {
-			if(cliente.equals(pCliente)) {
-				isClienteExiste = true;
-			}
-		}
+		boolean isClienteExiste = contaDAO.isClienteExistente(pCliente);
 		return isClienteExiste;
 	}
 	
@@ -146,13 +112,7 @@ public class Controlador {
 	}
 	
 	public Cliente buscarCliente(String cpf) {
-		Cliente clienteAtual = null;
-		List<Cliente> listaClientes = contaDAO.listarClientes();		
-		for (Cliente cliente : listaClientes) {
-			if(cpf.equals(cliente.getCpf())) {
-				clienteAtual = cliente;
-			}			
-		}
+		Cliente clienteAtual = contaDAO.buscarCliente(cpf);
 		return clienteAtual;
 	}
 

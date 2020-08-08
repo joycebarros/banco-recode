@@ -47,6 +47,16 @@ public class ContaDAO {
 	public List<Conta> listarContas(){
 		return listaContas;
 	}
+	
+	public Conta buscarConta(int numero) {
+		Conta conta = null;
+		for (Conta contaAtual : listaContas) {
+			if(numero == contaAtual.getNumero()) {
+				conta = contaAtual;				
+			}
+		}
+		return conta;
+	}
 
 	public Integer tamanhoListaContas() {
 		return listaContas.size();
@@ -62,6 +72,36 @@ public class ContaDAO {
 		
 	public List<Cliente> listarClientes(){
 		return listaClientes;
+	}
+	
+	public List<Conta> listarContasCliente(String cpf){
+		List<Conta> listaContasCliente = new ArrayList<>();
+		for (Conta contaAtual : listaContas) {
+			if(cpf.equals(contaAtual.getCliente().getCpf())) {
+				listaContasCliente.add(contaAtual);								
+			}
+		}
+		return listaContasCliente;
+	}
+	
+	public boolean isClienteExistente(Cliente pCliente) {
+		boolean isClienteExiste = false;
+		for (Cliente cliente : listaClientes) {
+			if(cliente.equals(pCliente)) {
+				isClienteExiste = true;
+			}
+		}
+		return isClienteExiste;
+	}
+	
+	public Cliente buscarCliente(String cpf) {
+		Cliente clienteAtual = null;
+		for (Cliente cliente : listaClientes) {
+			if(cpf.equals(cliente.getCpf())) {
+				clienteAtual = cliente;
+			}			
+		}
+		return clienteAtual;
 	}
 			
 }

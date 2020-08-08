@@ -1,6 +1,8 @@
-package com.br.recode.gui;
+package com.br.recode.main;
 
 import java.io.IOException;
+
+import com.br.recode.gui.ContaGui;
 
 public class ContaMain {
 

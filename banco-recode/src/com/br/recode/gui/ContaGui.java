@@ -4,12 +4,21 @@ import java.io.IOException;
 import java.util.Scanner;
 
 import com.br.recode.controlador.Controlador;
-import com.br.recode.entidades.Conta;
 
 public class ContaGui {
 	
+	public static final int ABRIR_CONTA = 1;
+	public static final int CONSULTAR_SALDO = 2;
+	public static final int CREDITAR = 3;
+	public static final int DEBITAR = 4;
+	public static final int TRANSFERIR = 5;
+	public static final int LISTAR_CONTAS_CLIENTE = 6;
+	public static final int LISTAR_CLIENTES = 7;
+	public static final int ATUALIZAR_CLIENTE = 8;
+	public static final int INATIVAR_CLIENTE = 9;
+	public static final int SAIR = 151;
 	private Controlador controlador;
-			
+				
 	public ContaGui() {
 		controlador = new Controlador();		
 	}
@@ -26,30 +35,28 @@ public class ContaGui {
 			System.out.println("Digite o cógido da ação desejada:");
 			codigo = scan.nextInt();
 			
+			
 			switch (codigo) {
-			case 1:
+			case ABRIR_CONTA:
 				String cpf = lerCPF();
 				String nome = lerNome();
 				String senha = lerSenha();
-		    	controlador.abrirConta(cpf, nome, senha);
+				int numero = tipoConta();
+		    	controlador.abrirConta(cpf, nome, senha, numero);
 		    	System.out.println("Conta aberta com sucesso!");
 				break;
-			case 2:
-				int numero = informarNumeroConta();
-				//Double valor = controlador.consultarSaldo(numero);
-				Conta conta = controlador.buscarConta(numero);
-				if(conta != null)
-					System.out.println("O saldo da conta é :" + conta.getSaldo());
-				else
-					System.out.println("Número da conta inválida");		
-				break;
-			case 3:
+			case CONSULTAR_SALDO:
 				numero = informarNumeroConta();
-				double valor = informarValor();
+				Double valor = controlador.consultarSaldo(numero);
+				System.out.println("O saldo da conta é : " + valor);
+				break;
+			case CREDITAR:
+				numero = informarNumeroConta();
+				valor = informarValor();
 				controlador.creditarValor(numero, valor);
 				System.out.println("Valor :" + valor + " creditado com sucesso!");
 				break;
-			case 4:
+			case DEBITAR:
 				numero = informarNumeroConta();
 				valor = informarValor();
 				senha = lerSenha();
@@ -59,7 +66,7 @@ public class ContaGui {
 					System.out.println("Senha inválida");
 				}		
 				break;
-			case 5:
+			case TRANSFERIR:
 				int numero1 = informarNumeroConta();
 				valor = informarValor();
 				System.out.println("Digite o número da conta de destino");
@@ -71,27 +78,27 @@ public class ContaGui {
 					System.out.println("Senha inválida");
 				}				
 				break;
-			case 6:
+			case LISTAR_CONTAS_CLIENTE:
 				cpf = lerCPF();
 				System.out.println(controlador.listarContasCliente(cpf));
 				break;
-			case 7:
+			case LISTAR_CLIENTES:
 				System.out.println(controlador.listarClientes());
 				break;
-			case 8:
+			case ATUALIZAR_CLIENTE:
 				cpf = lerCPF();
 				nome = lerNome();
 				controlador.atualizarCliente(cpf, nome);
 		    	System.out.println("Cliente atualizado com sucesso!");
 				break;
-			case 9:
+			case INATIVAR_CLIENTE:
 				System.out.println("Aguarde implementação");
 				break;
 			default:
 				break;
 			}		   
 			
-		} while (codigo != 151); 
+		} while (codigo != SAIR); 
 			System.out.println("Você saiu do sistema. Volte sempre!");	
 				
 	}	
@@ -111,6 +118,30 @@ public class ContaGui {
 	public Integer tipoConta() {
 		System.out.println("Digite [1] para Conta Corrente \n [2] para Poupança \n [3] para Conta Bonificada \n [4] para Conta Salário");
 		int numeroInformado = scan.nextInt();
+		
+		boolean isNumeroInvalido = true;
+		while(isNumeroInvalido) {
+									
+			switch (numeroInformado) {
+			case 1:
+				isNumeroInvalido = false;
+				break;
+	        case 2:
+	        	isNumeroInvalido = false;
+				break;
+	        case 3:
+	        	isNumeroInvalido = false;
+				break;
+	        case 4:
+	        	isNumeroInvalido = false;
+				break;		
+			default:
+				System.out.println("Número inválido!");
+				System.out.println("Digite [1] para Conta Corrente \n [2] para Poupança \n [3] para Conta Bonificada \n [4] para Conta Salário");
+				numeroInformado = scan.nextInt();
+				break;
+			}				
+		}
 		return numeroInformado;
 	}
 	
@@ -121,11 +152,13 @@ public class ContaGui {
 	
 	protected String lerNome() {
 		System.out.println("Informe o nome:");
-		return scan.next();
+		scan.nextLine();
+		return scan.nextLine();
 	}
 	
 	protected String lerSenha() {
 		System.out.println("Informe a senha:");
 		return scan.next();
-	}
+	}	
+	
 }
