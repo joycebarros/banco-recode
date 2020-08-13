@@ -1,6 +1,7 @@
 package com.br.recode.gui;
 
 import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import com.br.recode.controlador.Controlador;
@@ -27,15 +28,19 @@ public class ContaGui {
 	
 	public void iniciar() throws IOException {
 		
-		int codigo;
+		int codigo = 0;
 				
 		do {
 					
-			System.out.println(Menu.lerMenu());
-			System.out.println("Digite o cógido da ação desejada:");
-			codigo = scan.nextInt();
-			
-			
+			try {
+				System.out.println(Menu.lerMenu());
+				System.out.println("Digite o cógido da ação desejada:");
+				codigo = scan.nextInt();
+			} catch (InputMismatchException e) {
+				System.out.println("Você deve digitar um número.");
+				scan.nextLine();
+			}
+									
 			switch (codigo) {
 			case ABRIR_CONTA:
 				String cpf = lerCPF();
@@ -53,9 +58,14 @@ public class ContaGui {
 			case CREDITAR:
 				numero = informarNumeroConta();
 				valor = informarValor();
-				controlador.creditarValor(numero, valor);
-				System.out.println("Valor :" + valor + " creditado com sucesso!");
-				break;
+				try {
+					controlador.creditarValor(numero, valor);
+					System.out.println("Valor :" + valor + " creditado com sucesso!");
+					break;
+				}catch (RuntimeException e) {
+					System.out.println(e.getMessage());
+				}
+				
 			case DEBITAR:
 				numero = informarNumeroConta();
 				valor = informarValor();
@@ -104,20 +114,40 @@ public class ContaGui {
 	}	
 	
 	public Integer informarNumeroConta() {
-		System.out.println("Digite o número da sua conta");
-		int numeroInformado = scan.nextInt();
+		int numeroInformado = 0; 
+		try {
+			System.out.println("Digite o número da sua conta");
+			numeroInformado = scan.nextInt();			
+		} catch (InputMismatchException e) {
+			System.out.println("Você deve digitar números.");
+			scan.nextLine();
+			informarNumeroConta();
+		}
 		return numeroInformado;
 	}
 
 	public Double informarValor() {
-		System.out.println("Informe o valor : ");
-		double valor = scan.nextDouble();
+		double valor = 0;
+		try {
+			System.out.println("Informe o valor : ");
+			valor = scan.nextDouble();			
+		}catch (InputMismatchException e) {
+			System.out.println("Você deve digitar números.");
+			scan.nextLine();
+			informarValor();
+		}
 		return valor;
 	}
 	
 	public Integer tipoConta() {
-		System.out.println("Digite [1] para Conta Corrente \n [2] para Poupança \n [3] para Conta Bonificada \n [4] para Conta Salário");
-		int numeroInformado = scan.nextInt();
+		int numeroInformado = 0;
+		try {
+			System.out.println("Digite [1] para Conta Corrente \n [2] para Poupança \n [3] para Conta Bonificada \n [4] para Conta Salário");
+			numeroInformado = scan.nextInt();			
+		} catch (InputMismatchException e) {
+			System.out.println("Você deve digitar números.");
+			scan.nextLine();			
+		}
 		
 		boolean isNumeroInvalido = true;
 		while(isNumeroInvalido) {
@@ -137,8 +167,13 @@ public class ContaGui {
 				break;		
 			default:
 				System.out.println("Número inválido!");
-				System.out.println("Digite [1] para Conta Corrente \n [2] para Poupança \n [3] para Conta Bonificada \n [4] para Conta Salário");
-				numeroInformado = scan.nextInt();
+				try {
+					System.out.println("Digite [1] para Conta Corrente \n [2] para Poupança \n [3] para Conta Bonificada \n [4] para Conta Salário");
+					numeroInformado = scan.nextInt();			
+				} catch (InputMismatchException e) {
+					System.out.println("Você deve digitar números.");
+					scan.nextLine();			
+				}
 				break;
 			}				
 		}

@@ -69,9 +69,14 @@ public class Controlador {
 		return valor;
 	}
 	
-	public void creditarValor(int numero, double valor) {
+	public void creditarValor(int numero, Double valor) {
 		Conta conta = buscarConta(numero);
-		conta.creditar(valor);	
+		if(valor != null) {
+			conta.creditar(valor);	
+		} else {
+			throw new RuntimeException("Valor inválido");
+		}
+		
 	}
 	
 	public boolean debitarValor(int numero, double valor, String senha) {
