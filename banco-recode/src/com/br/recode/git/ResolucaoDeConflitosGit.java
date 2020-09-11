@@ -4,7 +4,7 @@ public class ResolucaoDeConflitosGit {
 	
 	private String conflito1;
 	private String conflito2;
-	private String conflito3;
+	private String conflitoNovo;
 	
 	
 	public String getConflito1() {
@@ -24,7 +24,7 @@ public class ResolucaoDeConflitosGit {
 	}
 	
 	public String getConflito3() {
-		return conflito3;
+		return conflitoNovo;
 	}
 	
 	
