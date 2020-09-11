@@ -27,6 +27,8 @@ public class ResolucaoDeConflitosGit {
 		return conflito3;
 	}
 	
-	
+	public void setConflito3(String conflito3) {
+		this.conflito3 = conflito3;
+	}
 
 }
