@@ -3,7 +3,7 @@ package com.br.recode.git;
 public class ResolucaoDeConflitosGit {
 	
 	private String conflito1;
-	private String conflito22;
+	private String conflito2;
 	private String conflito3;
 	
 	public String getConflito1() {
